@@ -201,9 +201,9 @@ The VCS needs to be added to the composer.json file, in the `repositories` prope
 ```json lines
   ...
   "repositories": [
-    "{
+    "aion-solutions-platformsh": {
       "type": "vcs",
-      "url": "https://github.com/aion-solutions/config-reader-php.git"
+      "url": "https://github.com/aion-solutions/platformsh-config-reader-php.git"
     }
   ...
 ```
