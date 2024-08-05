@@ -187,3 +187,68 @@ The `getRoute()` method takes a single string for the route ID ("main" in this c
 To access all routes, or to search for a route that has no ID, the `routes()` method returns an associative array of routes keyed by their URL.  That mirrors the structure of the `PLATFORM_ROUTES` environment variable.
 
 If called in the build phase an exception is thrown.
+
+## Drupal
+
+This library provides easy integration with Drupal. This requires 2 steps:
+- Add library through Composer
+- Modify the `sites/default/settings.php` file
+
+### Composer
+
+The VCS needs to be added to the composer.json file, in the `repositories` property:
+
+```json lines
+  ...
+  "repositories": [
+    "{
+      "type": "vcs",
+      "url": "https://github.com/aion-solutions/config-reader-php.git"
+    }
+  ...
+```
+
+Then the library can be added to the Composer requirements:
+
+```shell
+composer require platformsh/config-reader:^2.0
+```
+
+### Drupal settings
+
+Simply add the following lines to the `sites/default/settings.php` file:
+
+```php
+/**
+ * Integrates with Platform.sh when applicable.
+ */
+$platformShSettings = new \Platformsh\ConfigReader\Drupal\Settings($databases, $settings, $class_loader);
+$platformShSettings->applyDefaultSettings();
+```
+
+This should be fine for the standard configurations. However, you can call only
+some of the methods provided by the `applyDefaultSettings()` method. Or if you
+need to define some custom databases, you can define them first, then apply the
+default settings:
+
+```php
+/**
+ * Integrates with Platform.sh when applicable.
+ */
+$platformShSettings = new \Platformsh\ConfigReader\Drupal\Settings($databases, $settings, $class_loader);
+$platformShSettings->defineDatabase('main_database');
+$platformShSettings->defineDatabase('migrate_database', 'migrate');
+$platformShSettings->applyDefaultSettings();
+```
+
+### Platform application(s) file
+
+The `drush.yml` file can be generated during the build with the correct URLs
+with the following lines, either in the `.platform/applications.yaml` or
+`.platform.app.yaml` file:
+
+```yaml
+    deploy: |
+      set -e
+      php ./vendor/platformsh/config-reader/src/Drupal/generate_drush_yml.php
+```
