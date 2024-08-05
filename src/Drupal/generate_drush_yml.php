@@ -11,8 +11,8 @@ if (PHP_SAPI !== 'cli') {
 
 require_once(__DIR__ . '/../../../../autoload.php');
 
-$appRoot = dirname(__DIR__);
-$filename = $appRoot . '/drush/drush.yml';
+$appDir = \Platformsh\ConfigReader\Helper::getConfig()->appDir;
+$filename = $appDir . '/drush/drush.yml';
 $siteUrl = \Platformsh\ConfigReader\Helper::getSiteUrl();
 
 if (empty($siteUrl)) {
