@@ -50,11 +50,27 @@ class Settings {
     return $this->isPlatformShApplication;
   }
 
-  public function applyDefaultSettings(): void {
+    /**
+     * Applies default settings based on the current environment.
+     *
+     * @param array $options
+     *   An array of options to customize the default settings. Available
+     *   properties are:
+     *   - redis_relationship: The Redis relationship identifier. Default to
+     *     'redis'.
+     *   - redis_cache_prefix: The prefix to use with Redis, if available.
+     *     Default to an empty string.
+     */
+  public function applyDefaultSettings(array $options = []): void {
     if ($this->isPlatformShApplication()) {
+      $options += [
+        'redis_relationship' => 'redis',
+        'redis_cache_prefix' => '',
+      ]; 
+
       $this->defineDatabase();
       $this->setErrorMessageVerbosity();
-      $this->configureRedis();
+      $this->configureRedis($options['redis_relationship'], $options['redis_cache_prefix']);
       $this->setApplicationEnvironment();
       $this->setTempAndPrivateFilePaths();
       $this->setPhpStorage();
@@ -238,7 +254,7 @@ class Settings {
    * @param string $relationship The relationship identifier for the Redis
    *   configuration. Defaults to 'redis'.
    */
-  public function configureRedis(string $relationship = 'redis'): void {
+  public function configureRedis(string $relationship = 'redis', string $cachePrefix = ''): void {
     if ($this->config->hasRelationship($relationship) && class_exists('Drupal\Core\Installer\InstallerKernel') && !\Drupal\Core\Installer\InstallerKernel::installationAttempted() && extension_loaded('redis') && class_exists('Drupal\redis\ClientFactory')) {
       $redis = $this->config->credentials($relationship);
 
@@ -246,6 +262,10 @@ class Settings {
       $this->settings['cache']['default'] = 'cache.backend.redis';
       $this->settings['redis.connection']['host'] = $redis['host'];
       $this->settings['redis.connection']['port'] = $redis['port'];
+
+      if (!empty($cachePrefix)) {
+        $this->settings['cache_prefix'] = $cachePrefix;
+      }
 
       // Apply changes to the container configuration to better leverage Redis.
       // This includes using Redis for the lock and flood control systems, as well
