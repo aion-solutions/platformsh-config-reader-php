@@ -66,7 +66,7 @@ class Settings {
       $options += [
         'redis_relationship' => 'redis',
         'redis_cache_prefix' => '',
-      ]; 
+      ];
 
       $this->defineDatabase();
       $this->setErrorMessageVerbosity();
@@ -310,6 +310,22 @@ class Settings {
           ],
         ],
       ];
+    }
+  }
+
+  /**
+   * Default configuration for Symfony Mailer and for the transport id giver.
+   *
+   * @param string $transportId
+   */
+  public function configureSymfonyMailer(string $transportId = 'smtp'): void {
+    global $config;
+
+    if ($this->isPlatformShApplication() && $this->config->inRuntime()) {
+      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['user'] = '';
+      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['pass'] = '';
+      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['host'] = getenv('PLATFORM_SMTP_HOST');
+      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['port'] = '25';
     }
   }
 
