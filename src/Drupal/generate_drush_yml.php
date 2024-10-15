@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../../../../autoload.php');
 
 $appDir = \Platformsh\ConfigReader\Helper::getConfig()->appDir;
 $filename = $appDir . '/.drush/drush.yml';
-$siteUrl = \Platformsh\ConfigReader\Helper::getSiteUrl();
+$siteUrl = \Platformsh\ConfigReader\Helper::getPrimarySiteUrl();
 
 if (empty($siteUrl)) {
   echo "Failed to find a site URL\n";

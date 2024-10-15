@@ -72,4 +72,23 @@ class Helper {
     return reset($routes)['url'] ?: NULL;
   }
 
+  /**
+   * Get the primary site url.
+   *
+   * @return string|null The site URL, or null.
+   */
+  public static function getPrimarySiteUrl(): ?string {
+    $platformShConfig = static::getConfig();
+
+    $routes = $platformShConfig->routes();
+    foreach ($routes as $route) {
+      if ($route['primary']) {
+        return $route['url'];
+      }
+    }
+
+    // If no primary route, rely on the base getSiteUrl method.
+    return self::getSiteUrl();
+  }
+
 }
