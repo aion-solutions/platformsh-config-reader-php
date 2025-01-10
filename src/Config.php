@@ -433,13 +433,7 @@ class Config
      */
     public function onProduction() : bool
     {
-        if (!$this->inRuntime()) {
-            return false;
-        }
-
-        $prodBranch = $this->onDedicated() ? 'production' : 'master';
-
-        return $this->getValue('BRANCH') == $prodBranch;
+        return $this->inRuntime() && $this->getValue('ENVIRONMENT_TYPE') === 'production';
     }
 
     /**
