@@ -317,15 +317,21 @@ class Settings {
    * Default configuration for Symfony Mailer and for the transport id giver.
    *
    * @param string $transportId
+   *   The ID of the SMTP mailer transport configured in Drupal. Defaults to
+   *   'smtp'.
+   * @param string $mailerTransportPrefix
+   *   The prefix for the mailer transport configuration. For versions of
+   *   symfony mailer above 2.0, this should be 'mailer_transport'. Defaults to
+   *   'symfony_mailer' (for backward compatibility with versions below 2.0).
    */
-  public function configureSymfonyMailer(string $transportId = 'smtp'): void {
+  public function configureSymfonyMailer(string $transportId = 'smtp', string $mailerTransportPrefix = 'symfony_mailer'): void {
     global $config;
 
     if ($this->isPlatformShApplication() && $this->config->inRuntime()) {
-      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['user'] = '';
-      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['pass'] = '';
-      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['host'] = getenv('PLATFORM_SMTP_HOST');
-      $config['symfony_mailer.mailer_transport.' . $transportId]['configuration']['port'] = '25';
+      $config[$mailerTransportPrefix . '.mailer_transport.' . $transportId]['configuration']['user'] = '';
+      $config[$mailerTransportPrefix . '.mailer_transport.' . $transportId]['configuration']['pass'] = '';
+      $config[$mailerTransportPrefix . '.mailer_transport.' . $transportId]['configuration']['host'] = getenv('PLATFORM_SMTP_HOST');
+      $config[$mailerTransportPrefix . '.mailer_transport.' . $transportId]['configuration']['port'] = '25';
     }
   }
 
